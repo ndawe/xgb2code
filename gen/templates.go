@@ -121,7 +121,6 @@ func (r *renderer) executeDecisionNode(
 
 type rootParams struct {
 	FuncName      string
-	FuncNameFlat  string
 	Intercept     float64
 	PackageName   string
 	TreeFunctions []treeFunction
@@ -130,8 +129,7 @@ type rootParams struct {
 
 func (r *renderer) executeRoot(
 	packageName,
-	funcName,
-	funcNameFlat string,
+	funcName string,
 	treeFunctions []treeFunction,
 	meta modelMeta,
 ) (string, error) {
@@ -141,7 +139,6 @@ func (r *renderer) executeRoot(
 		rootTemplateName,
 		rootParams{
 			FuncName:      funcName,
-			FuncNameFlat:  funcNameFlat,
 			Intercept:     meta.intercept,
 			PackageName:   packageName,
 			TreeFunctions: treeFunctions,
