@@ -27,12 +27,12 @@ func TestCategoryTest(t *testing.T) {
 		{
 			name: "single category",
 			data: nodeData{Categorical: true, SplitIndex: 1, Categories: []int{2}},
-			want: "(*data[1] != 2)",
+			want: "(data[1] != 2)",
 		},
 		{
 			name: "multiple categories",
 			data: nodeData{Categorical: true, SplitIndex: 3, Categories: []int{0, 2, 5}},
-			want: "(*data[3] != 0 && *data[3] != 2 && *data[3] != 5)",
+			want: "(data[3] != 0 && data[3] != 2 && data[3] != 5)",
 		},
 	}
 

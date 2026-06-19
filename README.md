@@ -19,8 +19,7 @@ The following XGBoost objectives are supported:
 
 Both numeric and categorical splits (models trained with `enable_categorical`)
 are supported. Categorical features must be passed to the generated function as
-their integer category codes, the same encoding XGBoost uses internally; a
-missing feature is represented by a `nil` entry in the `data` slice.
+their integer category codes, the same encoding XGBoost uses internally.
 
 ## Supported Languages
 
@@ -53,14 +52,26 @@ $ ./xgb2code -function-name predict \
              -output-file predict.go
 ```
 
-produces a file `predict.go` where the primary model prediction function has the
-signature:
+produces a file `predict.go` with two prediction functions:
+
+```go
+func predictFlat(data []float32, predMargin bool) float32 {
+```
+
+`predictFlat` is the fast path. It takes a flat `[]float32` slice where missing
+features are represented as `float32(math.NaN())`. Internally it uses IEEE 754
+NaN comparison semantics to route missing values through the decision trees
+without explicit checks, and the contiguous memory layout avoids pointer chasing.
 
 ```go
 func predict(data []*float32, predMargin bool) float32 {
 ```
 
-When `predMargin` is true, the function returns the raw margin (the summed tree
+`predict` is a convenience wrapper that converts `nil` entries to `NaN`, then
+delegates to `predictFlat`. Use it when your data is already in `[]*float32`
+form.
+
+When `predMargin` is true, both functions return the raw margin (the summed tree
 outputs plus the `base_score` intercept). Otherwise, the sigmoid is applied for
 the logistic objectives (`binary:logistic` and `reg:logistic`); for all other
 objectives the margin is the final prediction, so `predMargin` has no effect.

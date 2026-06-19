@@ -55,7 +55,7 @@ func newRenderer() (*renderer, error) {
 }
 
 // categoryTest builds the "value not in category set" predicate for a
-// categorical split, e.g. "(*data[3] != 0 && *data[3] != 2)". It returns the
+// categorical split, e.g. "(data[3] != 0 && data[3] != 2)". It returns the
 // empty string for numeric splits. A categorical node with an empty set routes
 // every present value left, so the predicate is the constant "true".
 func categoryTest(d nodeData) string {
@@ -67,7 +67,7 @@ func categoryTest(d nodeData) string {
 	}
 	parts := make([]string, len(d.Categories))
 	for i, c := range d.Categories {
-		parts[i] = fmt.Sprintf("*data[%d] != %d", d.SplitIndex, c)
+		parts[i] = fmt.Sprintf("data[%d] != %d", d.SplitIndex, c)
 	}
 	return "(" + strings.Join(parts, " && ") + ")"
 }
@@ -87,8 +87,8 @@ type decisionNodeParams struct {
 	Right string
 	Level int
 	// CategoryTest is the Go expression, set only for categorical splits, that
-	// is true when the feature value is *not* in the node's category set (and so
-	// routes left). It mirrors the numeric "*data[i] < threshold" predicate.
+	// is true when the feature value is not in the node's category set (and so
+	// routes left). It mirrors the numeric "data[i] < threshold" predicate.
 	CategoryTest string
 }
 
@@ -121,6 +121,7 @@ func (r *renderer) executeDecisionNode(
 
 type rootParams struct {
 	FuncName      string
+	FuncNameFlat  string
 	Intercept     float64
 	PackageName   string
 	TreeFunctions []treeFunction
@@ -129,7 +130,8 @@ type rootParams struct {
 
 func (r *renderer) executeRoot(
 	packageName,
-	funcName string,
+	funcName,
+	funcNameFlat string,
 	treeFunctions []treeFunction,
 	meta modelMeta,
 ) (string, error) {
@@ -139,6 +141,7 @@ func (r *renderer) executeRoot(
 		rootTemplateName,
 		rootParams{
 			FuncName:      funcName,
+			FuncNameFlat:  funcNameFlat,
 			Intercept:     meta.intercept,
 			PackageName:   packageName,
 			TreeFunctions: treeFunctions,

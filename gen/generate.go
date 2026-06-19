@@ -36,7 +36,8 @@ func generateSource(
 		)
 	}
 
-	code, err := r.executeRoot(packageName, funcName, treeFunctions, meta)
+	funcNameFlat := funcName + "Flat"
+	code, err := r.executeRoot(packageName, funcName, funcNameFlat, treeFunctions, meta)
 	if err != nil {
 		return "", err
 	}
