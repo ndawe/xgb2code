@@ -39,8 +39,6 @@ func {{.FuncName}}(data []*float32, predMargin bool) float32 {
 }
 {{range .TreeFunctions}}
 func {{.Name}}(data []float32) float32 {
-	var sum float32
 {{.Code}}
-	return sum
 }
 {{end -}}
